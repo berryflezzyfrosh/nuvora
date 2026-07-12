@@ -1,289 +1,221 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0a0e27" />
-  <title>NUVORA</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
-  <!-- Supabase JS v2 UMD bundle (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-</head>
-<body>
-  <!-- ============================================================
-       SPLASH SCREEN
-       ============================================================ -->
-  <div id="splash" class="splash">
-    <div class="splash-inner">
-      <div class="splash-logo">
-        <svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true">
-          <defs>
-            <linearGradient id="splashGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#3b82f6" />
-              <stop offset="100%" stop-color="#a855f7" />
-            </linearGradient>
-          </defs>
-          <circle cx="32" cy="32" r="30" fill="url(#splashGrad)" />
-          <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </div>
-      <h1 class="splash-title">NUVORA</h1>
-      <p class="splash-tagline">Connect. Chat. Discover.</p>
-      <div class="splash-loader"><span></span></div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       AUTH SCREEN (login / signup)
-       ============================================================ -->
-  <div id="authScreen" class="auth-screen hidden">
-    <div class="auth-card glass">
-      <div class="auth-brand">
-        <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
-          <defs><linearGradient id="authGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#a855f7" /></linearGradient></defs>
-          <circle cx="32" cy="32" r="30" fill="url(#authGrad)" />
-          <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <h1>NUVORA</h1>
-      </div>
-
-      <!-- Tabs -->
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" type="button">Log In</button>
-        <button id="tabSignup" class="auth-tab" type="button">Sign Up</button>
-      </div>
-
-      <!-- Login form -->
-      <form id="loginForm" class="auth-form" autocomplete="on">
-        <div class="field">
-          <i class="fa-solid fa-envelope"></i>
-          <input id="loginEmail" type="email" placeholder="Email" required autocomplete="email" />
-        </div>
-        <div class="field">
-          <i class="fa-solid fa-lock"></i>
-          <input id="loginPassword" type="password" placeholder="Password" required autocomplete="current-password" />
-          <button type="button" class="toggle-pw" data-target="loginPassword"><i class="fa-solid fa-eye"></i></button>
-        </div>
-        <p id="loginError" class="auth-error hidden"></p>
-        <button type="submit" class="btn-primary">Log In</button>
-      </form>
-
-      <!-- Signup form -->
-      <form id="signupForm" class="auth-form hidden" autocomplete="on">
-        <div class="field">
-          <i class="fa-solid fa-user"></i>
-          <input id="signupName" type="text" placeholder="Full Name" required autocomplete="name" />
-        </div>
-        <div class="field">
-          <i class="fa-solid fa-at"></i>
-          <input id="signupUsername" type="text" placeholder="Username" required autocomplete="username" />
-        </div>
-        <div class="field">
-          <i class="fa-solid fa-envelope"></i>
-          <input id="signupEmail" type="email" placeholder="Email" required autocomplete="email" />
-        </div>
-        <div class="field">
-          <i class="fa-solid fa-lock"></i>
-          <input id="signupPassword" type="password" placeholder="Password" required autocomplete="new-password" />
-          <button type="button" class="toggle-pw" data-target="signupPassword"><i class="fa-solid fa-eye"></i></button>
-        </div>
-        <div id="pwStrength" class="pw-strength hidden">
-          <div class="pw-bar"><span id="pwBarFill"></span></div>
-          <span id="pwLabel">Weak</span>
-        </div>
-        <div class="field avatar-field">
-          <label class="avatar-pick">
-            <input id="signupAvatarFile" type="file" accept="image/*" hidden />
-            <div class="avatar-preview" id="avatarPreview"><i class="fa-solid fa-camera"></i></div>
-            <span>Profile photo</span>
-          </label>
-          <div class="avatar-presets" id="avatarPresets"></div>
-        </div>
-        <p id="signupError" class="auth-error hidden"></p>
-        <button type="submit" class="btn-primary">Create Account</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       MAIN APP
-       ============================================================ -->
-  <div id="app" class="app hidden">
-    <!-- Sidebar -->
-    <aside class="sidebar glass">
-      <div class="sidebar-header">
-        <div class="brand">
-          <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true">
-            <defs><linearGradient id="sideGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#a855f7" /></linearGradient></defs>
-            <circle cx="32" cy="32" r="30" fill="url(#sideGrad)" />
-            <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#075E54" />
+    <title>NUVORA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Boxicons CSS -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- SPLASH SCREEN -->
+    <div id="splash" class="splash">
+      <div class="splash-inner">
+        <div class="splash-logo">
+          <svg viewBox="0 0 64 64" width="80" height="80">
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs>
+            <circle cx="32" cy="32" r="30" fill="url(#sg)"/>
+            <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>NUVORA</span>
         </div>
-        <button id="newChatBtn" class="icon-btn" title="New chat"><i class="fa-solid fa-pen-to-square"></i></button>
+        <h1 class="splash-title">NUVORA</h1>
+        <p class="splash-tagline">Connect. Chat. Discover.</p>
+        <div class="splash-loader"><span></span></div>
       </div>
+    </div>
 
-      <div class="sidebar-search">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input id="sidebarSearch" type="text" placeholder="Search chats" />
+    <!-- AUTH SCREEN -->
+    <div id="authScreen" class="auth-screen hidden">
+      <div class="auth-card glass">
+        <div class="auth-brand">
+          <svg viewBox="0 0 64 64" width="48" height="48">
+            <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs>
+            <circle cx="32" cy="32" r="30" fill="url(#ag)"/>
+            <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h1>NUVORA</h1>
+        </div>
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active">Log In</button>
+          <button id="tabSignup" class="auth-tab">Sign Up</button>
+        </div>
+        <!-- Login -->
+        <form id="loginForm" class="auth-form">
+          <div class="field"><i class='bx bx-envelope'></i><input id="loginEmail" type="email" placeholder="Email" required /></div>
+          <div class="field"><i class='bx bx-lock-alt'></i><input id="loginPassword" type="password" placeholder="Password" required /><button type="button" class="toggle-pw" data-target="loginPassword"><i class='bx bx-show'></i></button></div>
+          <p id="loginError" class="auth-error hidden"></p>
+          <button type="submit" class="btn-primary">Log In</button>
+        </form>
+        <!-- Signup -->
+        <form id="signupForm" class="auth-form hidden">
+          <div class="field"><i class='bx bx-user'></i><input id="signupName" type="text" placeholder="Full Name" required /></div>
+          <div class="field"><i class='bx bx-at'></i><input id="signupUsername" type="text" placeholder="Username" required /></div>
+          <div class="field"><i class='bx bx-envelope'></i><input id="signupEmail" type="email" placeholder="Email" required /></div>
+          <div class="field"><i class='bx bx-lock-alt'></i><input id="signupPassword" type="password" placeholder="Password" required /><button type="button" class="toggle-pw" data-target="signupPassword"><i class='bx bx-show'></i></button></div>
+          <div id="pwStrength" class="pw-strength hidden"><div class="pw-bar"><span id="pwBarFill"></span></div><span id="pwLabel">Weak</span></div>
+          <div class="avatar-field">
+            <label class="avatar-pick"><input id="signupAvatarFile" type="file" accept="image/*" hidden /><div class="avatar-preview" id="avatarPreview"><i class='bx bx-camera'></i></div><span>Profile photo</span></label>
+            <div class="avatar-presets" id="avatarPresets"></div>
+          </div>
+          <p id="signupError" class="auth-error hidden"></p>
+          <button type="submit" class="btn-primary">Create Account</button>
+        </form>
       </div>
+    </div>
 
-      <div class="chat-list" id="chatList"></div>
-
-      <nav class="bottom-nav">
-        <button class="nav-item active" data-view="chats" title="Chats"><i class="fa-solid fa-comment-dots"></i><span>Chats</span></button>
-        <button class="nav-item" data-view="people" title="People"><i class="fa-solid fa-users"></i><span>People</span></button>
-        <button class="nav-item" data-view="nuvo" title="NUVO AI"><i class="fa-solid fa-robot"></i><span>NUVO</span></button>
-        <button class="nav-item" data-view="profile" title="Profile"><i class="fa-solid fa-user-circle"></i><span>Profile</span></button>
-      </nav>
-    </aside>
-
-    <!-- Main panel -->
-    <main class="main">
-      <!-- Empty state -->
-      <div id="emptyState" class="empty-state">
-        <div class="empty-icon"><i class="fa-solid fa-comments"></i></div>
-        <h2>Welcome to NUVORA</h2>
-        <p>Select a chat or start a new conversation.</p>
-      </div>
-
-      <!-- People view -->
-      <section id="peopleView" class="people-view hidden">
-        <header class="people-header glass">
-          <h2><i class="fa-solid fa-globe"></i> People</h2>
-          <div class="people-search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input id="peopleSearch" type="text" placeholder="Search by name or username" />
-          </div>
-        </header>
-        <div class="people-grid" id="peopleGrid"></div>
-      </section>
-
-      <!-- Profile view -->
-      <section id="profileView" class="profile-view hidden">
-        <div class="profile-card glass">
-          <div class="profile-avatar-wrap">
-            <div class="profile-avatar" id="profileAvatar"></div>
-            <button class="profile-edit-avatar" id="editAvatarBtn" title="Change photo"><i class="fa-solid fa-camera"></i></button>
-            <input id="profileAvatarFile" type="file" accept="image/*" hidden />
-          </div>
-          <h2 id="profileName"></h2>
-          <p id="profileUsername"></p>
-          <div class="profile-bio-field">
-            <i class="fa-solid fa-quote-left"></i>
-            <input id="profileBio" type="text" placeholder="Set a status / bio" maxlength="120" />
-            <button id="saveBioBtn" class="btn-small">Save</button>
-          </div>
-          <div class="profile-stats" id="profileStats"></div>
-          <div class="profile-actions">
-            <button id="themeToggle" class="btn-ghost"><i class="fa-solid fa-moon"></i> <span>Dark mode</span></button>
-            <button id="settingsBtn" class="btn-ghost"><i class="fa-solid fa-gear"></i> Settings</button>
-            <button id="logoutBtn" class="btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+    <!-- MAIN APP -->
+    <div id="app" class="app hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="brand"><svg viewBox="0 0 64 64" width="32" height="32"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(#bg)"/><path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>NUVORA</span></div>
+          <div class="sidebar-actions">
+            <button id="newChatBtn" class="icon-btn" title="New chat"><i class='bx bx-edit-alt'></i></button>
+            <button id="menuBtn" class="icon-btn" title="Menu"><i class='bx bx-dots-vertical-rounded'></i></button>
           </div>
         </div>
-      </section>
+        <div class="sidebar-search"><i class='bx bx-search'></i><input id="sidebarSearch" type="text" placeholder="Search chats" /></div>
+        <div class="chat-list" id="chatList"></div>
+        <nav class="bottom-nav">
+          <button class="nav-item active" data-view="chats"><i class='bx bx-conversation'></i><span>Chats</span></button>
+          <button class="nav-item" data-view="people"><i class='bx bx-group'></i><span>People</span></button>
+          <button class="nav-item" data-view="nuvo"><i class='bx bx-bot'></i><span>NUVO</span></button>
+          <button class="nav-item" data-view="status"><i class='bx bx-circle-half'></i><span>Status</span></button>
+          <button class="nav-item" data-view="profile"><i class='bx bx-user-circle'></i><span>Profile</span></button>
+        </nav>
+      </aside>
 
-      <!-- Settings view -->
-      <section id="settingsView" class="settings-view hidden">
-        <div class="settings-card glass">
-          <h2><i class="fa-solid fa-gear"></i> Settings</h2>
-          <div class="setting-row">
-            <label>Theme</label>
-            <div class="seg">
-              <button class="seg-btn active" data-theme="dark"><i class="fa-solid fa-moon"></i> Dark</button>
-              <button class="seg-btn" data-theme="light"><i class="fa-solid fa-sun"></i> Light</button>
+      <!-- MAIN PANEL -->
+      <main class="main" id="mainPanel">
+        <!-- Empty state -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon"><i class='bx bx-message-rounded-dots'></i></div>
+          <h2>Welcome to NUVORA</h2>
+          <p>Select a chat or start a new conversation.</p>
+        </div>
+
+        <!-- PEOPLE VIEW -->
+        <section id="peopleView" class="people-view hidden">
+          <header class="people-header glass">
+            <button class="back-btn" id="peopleBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-globe'></i> People</h2>
+            <div class="people-search"><i class='bx bx-search'></i><input id="peopleSearch" type="text" placeholder="Search by name or username" /></div>
+          </header>
+          <div class="people-grid" id="peopleGrid"></div>
+        </section>
+
+        <!-- PROFILE VIEW -->
+        <section id="profileView" class="profile-view hidden">
+          <div class="profile-card glass">
+            <div class="profile-avatar-wrap">
+              <div class="profile-avatar" id="profileAvatar"></div>
+              <button class="profile-edit-avatar" id="editAvatarBtn"><i class='bx bx-camera'></i></button>
+              <input id="profileAvatarFile" type="file" accept="image/*" hidden />
+            </div>
+            <h2 id="profileName"></h2>
+            <p id="profileUsername"></p>
+            <div class="profile-bio-field"><i class='bx bx-quote-alt-left'></i><input id="profileBio" type="text" placeholder="Set a status / bio" maxlength="120" /><button id="saveBioBtn" class="btn-small">Save</button></div>
+            <div class="profile-stats" id="profileStats"></div>
+            <div class="profile-actions">
+              <button id="themeToggle" class="btn-ghost"><i class='bx bx-moon'></i> <span>Dark mode</span></button>
+              <button id="settingsBtn" class="btn-ghost"><i class='bx bx-cog'></i> Settings</button>
+              <button id="logoutBtn" class="btn-danger"><i class='bx bx-log-out'></i> Log out</button>
             </div>
           </div>
-          <div class="setting-row">
-            <label>Notification sounds</label>
-            <label class="switch">
-              <input type="checkbox" id="notifToggle" checked />
-              <span class="slider"></span>
-            </label>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="settingsView" class="settings-view hidden">
+          <div class="settings-card glass">
+            <button class="back-btn" id="settingsBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-cog'></i> Settings</h2>
+            <div class="setting-row"><label>Theme</label><div class="seg"><button class="seg-btn active" data-theme="dark"><i class='bx bx-moon'></i> Dark</button><button class="seg-btn" data-theme="light"><i class='bx bx-sun'></i> Light</button></div></div>
+            <div class="setting-row"><label>Notification sounds</label><label class="switch"><input type="checkbox" id="notifToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Typing indicators</label><label class="switch"><input type="checkbox" id="typingToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Read receipts</label><label class="switch"><input type="checkbox" id="receiptsToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Disappearing messages</label><label class="switch"><input type="checkbox" id="disappearToggle" /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Block list</label><button id="blockListBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Starred messages</label><button id="starredBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Call history</label><button id="callHistoryBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Archive</label><button id="archiveBtn" class="btn-ghost">View</button></div>
           </div>
-          <div class="setting-row">
-            <label>Typing indicator</label>
-            <label class="switch">
-              <input type="checkbox" id="typingToggle" checked />
-              <span class="slider"></span>
-            </label>
+        </section>
+
+        <!-- STATUS VIEW -->
+        <section id="statusView" class="status-view hidden">
+          <header class="people-header glass">
+            <button class="back-btn" id="statusBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-circle-half'></i> Status</h2>
+          </header>
+          <div class="status-content" id="statusContent"></div>
+        </section>
+
+        <!-- CHAT VIEW -->
+        <section id="chatView" class="chat-view hidden">
+          <header class="chat-header glass">
+            <button class="back-btn" id="chatBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <div class="chat-header-avatar" id="chatHeaderAvatar"></div>
+            <div class="chat-header-info">
+              <h3 id="chatHeaderName"></h3>
+              <span id="chatHeaderStatus" class="chat-header-status"></span>
+            </div>
+            <div class="chat-header-actions">
+              <button class="icon-btn" id="callVoiceBtn" title="Voice call"><i class='bx bx-phone'></i></button>
+              <button class="icon-btn" id="callVideoBtn" title="Video call"><i class='bx bx-video'></i></button>
+              <button class="icon-btn" id="chatSearchBtn" title="Search"><i class='bx bx-search'></i></button>
+              <button class="icon-btn" id="chatMenuBtn" title="More"><i class='bx bx-dots-vertical-rounded'></i></button>
+            </div>
+            <div class="chat-search-bar hidden" id="chatSearchBar">
+              <input id="chatSearchInput" type="text" placeholder="Search messages..." />
+              <button id="chatSearchClose" class="icon-btn"><i class='bx bx-x'></i></button>
+            </div>
+          </header>
+          <div class="messages" id="messages"></div>
+          <div class="reply-preview hidden" id="replyPreview"><div class="reply-preview-content"></div><button id="replyPreviewClose" class="icon-btn"><i class='bx bx-x'></i></button></div>
+          <div class="emoji-panel hidden" id="emojiPanel"></div>
+          <footer class="chat-input-bar glass">
+            <button class="icon-btn" id="emojiBtn" title="Emoji"><i class='bx bx-smile'></i></button>
+            <button class="icon-btn" id="attachBtn" title="Attach"><i class='bx bx-paperclip'></i></button>
+            <input type="file" id="fileInput" hidden />
+            <textarea id="messageInput" placeholder="Type a message..." rows="1"></textarea>
+            <button class="icon-btn" id="voiceBtn" title="Voice"><i class='bx bx-microphone'></i></button>
+            <button class="send-btn" id="sendBtn" title="Send"><i class='bx bxs-send'></i></button>
+          </footer>
+        </section>
+
+        <!-- CALL MODAL -->
+        <div id="callModal" class="call-modal hidden">
+          <div class="call-content">
+            <div class="call-avatar" id="callAvatar"></div>
+            <h2 id="callName"></h2>
+            <p id="callStatus">Calling...</p>
+            <div class="call-controls">
+              <button class="call-btn" id="callMuteBtn"><i class='bx bx-microphone'></i></button>
+              <button class="call-btn hangup" id="callEndBtn"><i class='bx bx-phone-off'></i></button>
+              <button class="call-btn" id="callVideoToggleBtn"><i class='bx bx-video'></i></button>
+              <button class="call-btn" id="callSpeakerBtn"><i class='bx bx-volume-full'></i></button>
+            </div>
           </div>
-          <div class="setting-row">
-            <label>Read receipts</label>
-            <label class="switch">
-              <input type="checkbox" id="receiptsToggle" checked />
-              <span class="slider"></span>
-            </label>
-          </div>
-          <button id="settingsBack" class="btn-ghost"><i class="fa-solid fa-arrow-left"></i> Back to profile</button>
         </div>
-      </section>
+      </main>
+    </div>
 
-      <!-- Chat view -->
-      <section id="chatView" class="chat-view hidden">
-        <header class="chat-header glass">
-          <button class="back-btn" id="chatBackBtn"><i class="fa-solid fa-arrow-left"></i></button>
-          <div class="chat-header-avatar" id="chatHeaderAvatar"></div>
-          <div class="chat-header-info">
-            <h3 id="chatHeaderName"></h3>
-            <span id="chatHeaderStatus" class="chat-header-status"></span>
-          </div>
-          <div class="chat-header-actions">
-            <button class="icon-btn" id="chatSearchBtn" title="Search in chat"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button class="icon-btn" id="chatMenuBtn" title="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          </div>
-          <div class="chat-search-bar hidden" id="chatSearchBar">
-            <input id="chatSearchInput" type="text" placeholder="Search messages..." />
-            <button id="chatSearchClose" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-        </header>
+    <!-- CONTEXT MENU -->
+    <div id="ctxMenu" class="ctx-menu hidden"></div>
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden"><div class="modal-card glass" id="modalCard"></div></div>
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
 
-        <div class="messages" id="messages"></div>
-
-        <div class="reply-preview hidden" id="replyPreview">
-          <div class="reply-preview-content"></div>
-          <button id="replyPreviewClose" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="emoji-panel hidden" id="emojiPanel"></div>
-
-        <footer class="chat-input-bar glass">
-          <button class="icon-btn" id="emojiBtn" title="Emoji"><i class="fa-regular fa-face-smile"></i></button>
-          <textarea id="messageInput" placeholder="Type a message..." rows="1"></textarea>
-          <button class="send-btn" id="sendBtn" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
-        </footer>
-      </section>
-    </main>
-  </div>
-
-  <!-- ============================================================
-       CONTEXT MENU (message actions)
-       ============================================================ -->
-  <div id="ctxMenu" class="ctx-menu hidden"></div>
-
-  <!-- ============================================================
-       MODAL (new chat / group / confirm)
-       ============================================================ -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-card glass" id="modalCard"></div>
-  </div>
-
-  <!-- ============================================================
-       TOAST
-       ============================================================ -->
-  <div id="toast" class="toast hidden"></div>
-
-  <!-- Fallback env injection (Vite injects these at runtime) -->
-  <script>
-    window.__NUVORA_SUPABASE_URL__ = window.__NUVORA_SUPABASE_URL__ || "";
-    window.__NUVORA_SUPABASE_ANON_KEY__ = window.__NUVORA_SUPABASE_ANON_KEY__ || "";
-  </script>
-  <script type="module" src="supabase-config.js"></script>
-  <script src="nuvo-ai.js"></script>
-  <script type="module" src="app.js"></script>
-</body>
+    <!-- Supabase JS v2 (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script type="module" src="/supabase-config.js"></script>
+    <script src="/nuvo-ai.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
 </html>
