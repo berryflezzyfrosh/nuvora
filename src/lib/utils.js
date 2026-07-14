@@ -82,11 +82,11 @@ export function fileToDataUrl(file) {
 
 export function getMessagePreview(msg) {
   if (!msg) return "";
-  if (msg.is_deleted) return "🚫 This message was deleted";
-  if (msg.message_type === "image") return "📷 Photo";
-  if (msg.message_type === "video") return "🎥 Video";
-  if (msg.message_type === "audio") return "🎵 Audio";
-  if (msg.message_type === "voice") return "🎤 Voice message";
-  if (msg.message_type === "document") return "📄 Document";
+  if (msg.is_deleted) return "This message was deleted";
+  if (msg.message_type === "image") return "Photo";
+  if (msg.message_type === "video") return "Video";
+  if (msg.message_type === "audio") return "Audio";
+  if (msg.message_type === "voice") return "Voice message";
+  if (msg.message_type === "document") return "Document";
   return msg.decrypted || "";
 }

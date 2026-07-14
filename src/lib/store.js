@@ -4,9 +4,16 @@ import {
   generateKeyPair,
   encryptMessage,
   decryptMessage,
+  encryptGroupMessage,
+  decryptGroupMessage,
   storePrivateKey,
   loadPrivateKey,
   clearPrivateKey,
+  sanitizeInput,
+  sanitizeName,
+  sanitizeUsername,
+  validatePassword,
+  rateLimitCheck,
 } from "./crypto";
 import { playSound } from "./utils";
 
@@ -37,6 +44,14 @@ export const useStore = create((set, get) => ({
   setAuthReady: (ready) => set({ authReady: ready }),
 
   signUp: async ({ email, password, fullName, username, pin }) => {
+    // Validate and sanitize all inputs
+    const cleanName = sanitizeName(fullName);
+    const cleanUsername = sanitizeUsername(username);
+    if (!cleanName) throw new Error("Full name is required");
+    if (cleanUsername.length < 3) throw new Error("Username must be at least 3 characters");
+    const pwError = validatePassword(password);
+    if (pwError) throw new Error(pwError);
+
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
     if (!data.user) throw new Error("Signup failed");
@@ -48,10 +63,10 @@ export const useStore = create((set, get) => ({
     // Insert profile with public key
     const { error: profileError } = await supabase.from("profiles").insert({
       id: data.user.id,
-      username,
-      full_name: fullName,
+      username: cleanUsername,
+      full_name: cleanName,
       public_key: keyPair.publicKey,
-      bio: "Hey there! I'm using WhatsApp Clone.",
+      bio: "Hey there! I'm using NUVORA.",
     });
     if (profileError) throw profileError;
 
@@ -304,21 +319,33 @@ export const useStore = create((set, get) => ({
     const privKey = get().privateKey;
     const profiles = get().profiles;
     const user = get().user;
+    const chatInfo = get().chats.find((c) => c.id === chatId);
 
     const decrypted = await Promise.all(
       (data || []).map(async (m) => {
         let decrypted = "";
         if (m.encrypted_content && privKey && !m.is_deleted) {
-          // Find peer public key
           const otherId = m.sender_id === user.id ? getOtherMemberId(chatId, get().chats) : m.sender_id;
           const peer = profiles.get(otherId);
           if (peer && peer.public_key) {
-            decrypted = await decryptMessage(
-              m.encrypted_content,
-              m.iv,
-              privKey,
-              peer.public_key
-            );
+            if (m.iv === "group-multi" && chatInfo?.type === "group") {
+              decrypted = await decryptGroupMessage(
+                m.encrypted_content,
+                user.id,
+                privKey,
+                peer.public_key
+              );
+            } else if (m.iv === "group" || m.iv === "none") {
+              // Legacy base64 encoding — try to decode
+              try { decrypted = decodeURIComponent(escape(atob(m.encrypted_content))); } catch { decrypted = ""; }
+            } else {
+              decrypted = await decryptMessage(
+                m.encrypted_content,
+                m.iv,
+                privKey,
+                peer.public_key
+              );
+            }
           }
         }
         const msgReactions = reactions.filter((r) => r.message_id === m.id);
@@ -334,6 +361,14 @@ export const useStore = create((set, get) => ({
 
   sendMessage: async (chatId, text, options = {}) => {
     const { replyTo, messageType = "text", mediaUrl = null, forwardedFrom = null } = options;
+    // Rate limiting
+    if (!rateLimitCheck()) {
+      throw new Error("Rate limit exceeded. Please slow down.");
+    }
+    // Sanitize input
+    const cleanText = sanitizeInput(text);
+    if (!cleanText && messageType === "text") return;
+
     const privKey = get().privateKey;
     const user = get().user;
     const chats = get().chats;
@@ -346,15 +381,25 @@ export const useStore = create((set, get) => ({
       const otherId = getOtherMemberId(chatId, chats);
       const peer = get().profiles.get(otherId);
       if (peer && peer.public_key) {
-        encrypted = await encryptMessage(text, privKey, peer.public_key);
+        encrypted = await encryptMessage(cleanText, privKey, peer.public_key);
       }
     } else if (privKey && chat.type === "group") {
-      // For groups, use a simple shared key approach (encrypt with each member's key would be needed)
-      // For simplicity, store a lightly encrypted version using the sender's own key pair
-      // In production, this would use a group session key
-      encrypted = { ciphertext: btoa(unescape(encodeURIComponent(text))), iv: "group" };
+      // For groups, encrypt with each member's public key
+      const memberKeys = {};
+      for (const memberId of chat.members || []) {
+        if (memberId === user.id) continue;
+        const p = get().profiles.get(memberId);
+        if (p && p.public_key) {
+          memberKeys[memberId] = p.public_key;
+        }
+      }
+      if (Object.keys(memberKeys).length > 0) {
+        encrypted = await encryptGroupMessage(cleanText, privKey, memberKeys);
+      } else {
+        encrypted = { ciphertext: btoa(unescape(encodeURIComponent(cleanText))), iv: "group" };
+      }
     } else {
-      encrypted = { ciphertext: btoa(unescape(encodeURIComponent(text))), iv: "none" };
+      encrypted = { ciphertext: btoa(unescape(encodeURIComponent(cleanText))), iv: "none" };
     }
 
     const { data, error } = await supabase
@@ -377,7 +422,7 @@ export const useStore = create((set, get) => ({
     // Update local state
     const msgMap = new Map(get().messages);
     const list = msgMap.get(chatId) || [];
-    list.push({ ...data, decrypted: text, reactions: [] });
+    list.push({ ...data, decrypted: cleanText, reactions: [] });
     msgMap.set(chatId, list);
     set({ messages: msgMap });
 
@@ -416,11 +461,13 @@ export const useStore = create((set, get) => ({
   },
 
   editMessage: async (messageId, newText) => {
+    const cleanText = sanitizeInput(newText);
+    if (!cleanText) return;
     const privKey = get().privateKey;
     const msg = findMessage(get().messages, messageId);
     if (!msg) return;
     const chat = get().chats.find((c) => c.id === msg.chat_id);
-    let encrypted = { ciphertext: btoa(unescape(encodeURIComponent(newText))), iv: "none" };
+    let encrypted = { ciphertext: btoa(unescape(encodeURIComponent(cleanText))), iv: "none" };
     if (privKey && chat?.type === "direct") {
       const otherId = getOtherMemberId(msg.chat_id, get().chats);
       const peer = get().profiles.get(otherId);
@@ -443,7 +490,7 @@ export const useStore = create((set, get) => ({
       msgMap.set(
         chatId,
         list.map((m) =>
-          m.id === messageId ? { ...m, decrypted: newText, is_edited: true } : m
+          m.id === messageId ? { ...m, decrypted: cleanText, is_edited: true } : m
         )
       );
     }

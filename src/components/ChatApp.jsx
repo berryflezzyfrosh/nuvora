@@ -99,14 +99,14 @@ function EmptyState() {
     <div className="flex h-full items-center justify-center bg-wa-darkpanel dark:bg-wa-darkpanel">
       <div className="text-center px-8">
         <div className="mb-6 text-6xl text-wa-subtext opacity-30">
-          <i className="fa-brands fa-whatsapp"></i>
+          <i className="bx bxl-whatsapp text-6xl"></i>
         </div>
         <h2 className="text-xl font-medium text-wa-subtext mb-2">WhatsApp Clone Web</h2>
         <p className="text-sm text-wa-subtext/70 max-w-md">
           Select a chat to start messaging. All messages are end-to-end encrypted.
         </p>
         <div className="mt-8 flex items-center justify-center gap-2 text-xs text-wa-subtext/50">
-          <i className="fa-solid fa-lock"></i>
+          <i className="bx bx-lock-alt"></i>
           Your messages are secured with end-to-end encryption
         </div>
       </div>

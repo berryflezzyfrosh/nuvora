@@ -9,7 +9,7 @@ export default function Settings() {
     <div className="flex h-full flex-col bg-wa-darkpanel overflow-y-auto">
       <div className="flex items-center gap-3 px-4 py-3 border-b border-wa-darkborder">
         <button onClick={() => navigate(-1)} className="p-2 text-wa-subtext hover:text-white">
-          <i className="fa-solid fa-arrow-left"></i>
+          <i className="bx bx-arrow-back text-xl"></i>
         </button>
         <h2 className="text-lg font-semibold text-white">Settings</h2>
       </div>
@@ -24,13 +24,13 @@ export default function Settings() {
                 onClick={() => updateSettings({ theme: "dark" })}
                 className={`rounded-md px-4 py-1.5 text-sm font-medium transition ${settings.theme === "dark" ? "bg-wa-green text-white" : "text-wa-subtext"}`}
               >
-                <i className="fa-solid fa-moon mr-1"></i> Dark
+                <i className="bx bx-moon mr-1"></i> Dark
               </button>
               <button
                 onClick={() => updateSettings({ theme: "light" })}
                 className={`rounded-md px-4 py-1.5 text-sm font-medium transition ${settings.theme === "light" ? "bg-wa-green text-white" : "text-wa-subtext"}`}
               >
-                <i className="fa-solid fa-sun mr-1"></i> Light
+                <i className="bx bx-sun mr-1"></i> Light
               </button>
             </div>
           </div>
@@ -45,20 +45,20 @@ export default function Settings() {
 
         {/* Privacy */}
         <Section title="Privacy & Security">
-          <InfoRow icon="lock" label="End-to-end encryption" value="Enabled" />
-          <InfoRow icon="key" label="E2EE Key" value="Generated" />
-          <InfoRow icon="shield" label="Zero-knowledge" value="Active" />
+          <InfoRow icon="bx-lock-alt" label="End-to-end encryption" value="Enabled" />
+          <InfoRow icon="bx-key" label="E2EE Key" value="Generated" />
+          <InfoRow icon="bx-shield" label="Zero-knowledge" value="Active" />
         </Section>
 
         {/* Account */}
         <Section title="Account">
           <button onClick={() => navigate("/profile")} className="flex w-full items-center justify-between py-3 hover:bg-wa-darkchat rounded-lg px-3 transition">
             <span className="text-white">Edit Profile</span>
-            <i className="fa-solid fa-chevron-right text-wa-subtext"></i>
+            <i className="bx bx-chevron-right text-wa-subtext text-lg"></i>
           </button>
           <button onClick={signOut} className="flex w-full items-center justify-between py-3 hover:bg-wa-darkchat rounded-lg px-3 transition text-red-400">
             <span>Log Out</span>
-            <i className="fa-solid fa-right-from-bracket"></i>
+            <i className="bx bx-log-out text-lg"></i>
           </button>
         </Section>
 
@@ -98,7 +98,7 @@ function InfoRow({ icon, label, value }) {
   return (
     <div className="flex items-center justify-between py-3 px-3">
       <span className="text-white flex items-center gap-2">
-        <i className={`fa-solid fa-${icon} text-wa-subtext`}></i>
+        <i className={`bx ${icon} text-wa-subtext`}></i>
         {label}
       </span>
       <span className="text-wa-subtext text-sm">{value}</span>

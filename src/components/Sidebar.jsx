@@ -36,34 +36,34 @@ export default function Sidebar() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-wa-darkpanel">
         <h1 className="text-lg font-bold text-white flex items-center gap-2">
-          <i className="fa-brands fa-whatsapp text-wa-green text-2xl"></i>
-          WhatsApp
+          <i className="bx bxl-whatsapp text-wa-green text-2xl"></i>
+          NUVORA
         </h1>
         <div className="flex items-center gap-1">
           <button onClick={() => setTab("status")} className="p-2 text-wa-subtext hover:text-white transition" title="Status">
-            <i className="fa-solid fa-circle-dot"></i>
+            <i className="bx bx-circle-half text-lg"></i>
           </button>
           <button onClick={() => setShowNewChat(true)} className="p-2 text-wa-subtext hover:text-white transition" title="New chat">
-            <i className="fa-solid fa-pen-to-square"></i>
+            <i className="bx bx-edit-alt text-lg"></i>
           </button>
           <button onClick={() => navigate("/settings")} className="p-2 text-wa-subtext hover:text-white transition" title="Settings">
-            <i className="fa-solid fa-ellipsis-vertical"></i>
+            <i className="bx bx-dots-vertical-rounded text-lg"></i>
           </button>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex border-b border-wa-darkborder">
-        <TabButton active={tab === "chats"} onClick={() => setTab("chats")} icon="comments" label="Chats" />
-        <TabButton active={tab === "status"} onClick={() => setTab("status")} icon="circle-dot" label="Status" />
-        <TabButton active={tab === "people"} onClick={() => navigate("/people")} icon="users" label="People" />
+        <TabButton active={tab === "chats"} onClick={() => setTab("chats")} icon="bx-conversation" label="Chats" />
+        <TabButton active={tab === "status"} onClick={() => setTab("status")} icon="bx-circle-half" label="Status" />
+        <TabButton active={tab === "people"} onClick={() => navigate("/people")} icon="bx-group" label="People" />
       </div>
 
       {/* Search */}
       {tab === "chats" && (
         <div className="px-3 py-2">
           <div className="relative">
-            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
+            <i className="bx bx-search absolute left-4 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
             <input
               type="text"
               placeholder="Search chats"
@@ -108,7 +108,7 @@ export default function Sidebar() {
                         style={{ background: chat.type === "group" ? "#25D366" : avatarColor(otherUser?.id || chat.id) }}
                       >
                         {chat.type === "group" ? (
-                          <i className="fa-solid fa-users"></i>
+                          <i className="bx bx-group"></i>
                         ) : (
                           initials(name)
                         )}
@@ -131,7 +131,7 @@ export default function Sidebar() {
                         {lastMsg?.sender_id === user?.id && "You: "}
                         {getMessagePreview({ ...lastMsg, decrypted: lastMsg?.decrypted })}
                       </span>
-                      {chat.myMember?.muted && <i className="fa-solid fa-bell-slash text-xs text-wa-subtext ml-2"></i>}
+                      {chat.myMember?.muted && <i className="bx bx-bell-slash text-xs text-wa-subtext ml-2"></i>}
                     </div>
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function Sidebar() {
           <div className="text-xs text-wa-subtext truncate">@{profile?.username}</div>
         </div>
         <button onClick={(e) => { e.stopPropagation(); signOut(); }} className="p-2 text-wa-subtext hover:text-red-400 transition" title="Log out">
-          <i className="fa-solid fa-right-from-bracket"></i>
+          <i className="bx bx-log-out text-lg"></i>
         </button>
       </div>
 
@@ -179,7 +179,7 @@ function TabButton({ active, onClick, icon, label }) {
         active ? "border-wa-green text-wa-green" : "border-transparent text-wa-subtext hover:text-white"
       }`}
     >
-      <i className={`fa-solid fa-${icon}`}></i>
+      <i className={`bx ${icon}`}></i>
       {label}
     </button>
   );
@@ -211,12 +211,12 @@ function StatusSection() {
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
             ) : (
-              <i className="fa-solid fa-plus"></i>
+              <i className="bx bx-plus"></i>
             )}
           </div>
           {myStatuses.length === 0 && (
             <span className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-wa-green text-white text-xs">
-              <i className="fa-solid fa-plus"></i>
+              <i className="bx bx-plus"></i>
             </span>
           )}
         </div>

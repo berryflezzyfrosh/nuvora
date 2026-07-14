@@ -5,8 +5,10 @@ import { initials, avatarColor } from "../lib/utils";
 
 export default function CallModal() {
   const { callState, setCallState, user, profiles, settings } = useStore();
-  const [status, setStatus] = useState("calling"); // calling, connected, declined, ended
+  const [status, setStatus] = useState("calling");
   const [duration, setDuration] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const [videoOn, setVideoOn] = useState(true);
   const pcRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
@@ -18,6 +20,8 @@ export default function CallModal() {
     if (!callState) return;
     setStatus("calling");
     setDuration(0);
+    setMuted(false);
+    setVideoOn(callState.type === "video");
 
     const startCall = async () => {
       try {
@@ -77,7 +81,6 @@ export default function CallModal() {
 
         ch.send({ type: "broadcast", event: "offer", payload: { offer, from: user.id } });
 
-        // Log call
         await supabase.from("calls").insert({
           caller_id: user.id,
           receiver_id: callState.receiverId,
@@ -116,6 +119,18 @@ export default function CallModal() {
     setTimeout(() => setCallState(null), 1000);
   };
 
+  const toggleMute = () => {
+    const tracks = localStreamRef.current?.getAudioTracks();
+    tracks?.forEach((t) => (t.enabled = !t.enabled));
+    setMuted(!muted);
+  };
+
+  const toggleVideo = () => {
+    const tracks = localStreamRef.current?.getVideoTracks();
+    tracks?.forEach((t) => (t.enabled = !t.enabled));
+    setVideoOn(!videoOn);
+  };
+
   if (!callState) return null;
 
   const otherUser = profiles.get(callState.receiverId);
@@ -123,7 +138,6 @@ export default function CallModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-wa-darkbg fade-in">
-      {/* Video elements */}
       {callState.type === "video" && (
         <>
           <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
@@ -132,7 +146,6 @@ export default function CallModal() {
       )}
 
       <div className="relative z-10 flex flex-col items-center gap-4">
-        {/* Avatar */}
         <div className="relative">
           {otherUser?.avatar_url ? (
             <img src={otherUser.avatar_url} alt="" className="h-32 w-32 rounded-full object-cover" />
@@ -146,7 +159,6 @@ export default function CallModal() {
           )}
         </div>
 
-        {/* Info */}
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-white">{otherUser?.full_name || "Unknown"}</h2>
           <p className="text-wa-subtext mt-1">
@@ -160,33 +172,26 @@ export default function CallModal() {
           )}
         </div>
 
-        {/* Controls */}
         <div className="flex gap-4 mt-8">
-          {status === "connected" && (
+          {status === "connected" && callState.type === "video" && (
             <button
-              onClick={() => {
-                const tracks = localStreamRef.current?.getVideoTracks();
-                tracks?.forEach((t) => (t.enabled = !t.enabled));
-              }}
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-wa-darkinput text-white hover:bg-wa-darkborder transition"
+              onClick={toggleVideo}
+              className={`flex h-14 w-14 items-center justify-center rounded-full text-white transition ${videoOn ? "bg-wa-darkinput hover:bg-wa-darkborder" : "bg-wa-green hover:bg-wa-teal"}`}
             >
-              <i className="fa-solid fa-video text-xl"></i>
+              <i className={`bx ${videoOn ? "bx-video" : "bx-video-off"} text-xl`}></i>
             </button>
           )}
           <button
-            onClick={() => {
-              const tracks = localStreamRef.current?.getAudioTracks();
-              tracks?.forEach((t) => (t.enabled = !t.enabled));
-            }}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-wa-darkinput text-white hover:bg-wa-darkborder transition"
+            onClick={toggleMute}
+            className={`flex h-14 w-14 items-center justify-center rounded-full text-white transition ${muted ? "bg-wa-green hover:bg-wa-teal" : "bg-wa-darkinput hover:bg-wa-darkborder"}`}
           >
-            <i className="fa-solid fa-microphone text-xl"></i>
+            <i className={`bx ${muted ? "bx-microphone" : "bxs-microphone"} text-xl`}></i>
           </button>
           <button
             onClick={endCall}
             className="flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 transition"
           >
-            <i className="fa-solid fa-phone-slash text-xl"></i>
+            <i className="bx bx-phone-off text-xl"></i>
           </button>
         </div>
       </div>

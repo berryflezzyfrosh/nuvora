@@ -48,12 +48,12 @@ export default function NewChatModal({ onClose }) {
             <div className="flex items-center justify-between px-5 py-4 border-b border-wa-darkborder">
               <h2 className="text-lg font-semibold text-white">New Chat</h2>
               <button onClick={onClose} className="p-1 text-wa-subtext hover:text-white">
-                <i className="fa-solid fa-xmark text-lg"></i>
+                <i className="bx bx-x text-lg"></i>
               </button>
             </div>
             <div className="px-5 py-3">
               <div className="relative">
-                <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
+                <i className="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
                 <input
                   type="text"
                   placeholder="Search people..."
@@ -81,7 +81,7 @@ export default function NewChatModal({ onClose }) {
                     <div className="font-medium text-white text-sm">{p.full_name}</div>
                     <div className="text-xs text-wa-subtext">@{p.username}</div>
                   </div>
-                  {selected.has(p.id) && <i className="fa-solid fa-check text-wa-green"></i>}
+                  {selected.has(p.id) && <i className="bx bx-check text-wa-green text-lg"></i>}
                 </div>
               ))}
             </div>
@@ -101,7 +101,7 @@ export default function NewChatModal({ onClose }) {
             <div className="flex items-center justify-between px-5 py-4 border-b border-wa-darkborder">
               <h2 className="text-lg font-semibold text-white">New Group</h2>
               <button onClick={() => setStep("select")} className="p-1 text-wa-subtext hover:text-white">
-                <i className="fa-solid fa-arrow-left text-lg"></i>
+                <i className="bx bx-arrow-back text-lg"></i>
               </button>
             </div>
             <div className="px-5 py-4">
@@ -110,6 +110,7 @@ export default function NewChatModal({ onClose }) {
                 placeholder="Group name"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
+                maxLength={50}
                 className="w-full rounded-lg bg-wa-darkinput py-3 px-4 text-white placeholder:text-wa-subtext focus:outline-none mb-4"
                 autoFocus
               />

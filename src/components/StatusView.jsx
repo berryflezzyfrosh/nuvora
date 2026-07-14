@@ -77,7 +77,7 @@ export default function StatusView() {
                 </div>
               )}
               <span className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-wa-green text-white text-xs border-2 border-wa-darkpanel">
-                <i className="fa-solid fa-plus"></i>
+                <i className="bx bx-plus"></i>
               </span>
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function StatusView() {
             </div>
             <div className="flex gap-2">
               <button onClick={() => fileRef.current?.click()} className="rounded-lg bg-wa-darkinput px-3 py-1.5 text-sm text-white hover:bg-wa-darkborder transition">
-                <i className="fa-solid fa-image mr-1"></i> Photo
+                <i className="bx bx-image mr-1"></i> Photo
               </button>
               <button onClick={postText} className="rounded-lg bg-wa-green px-3 py-1.5 text-sm text-white hover:bg-wa-teal transition">
                 Post Text
@@ -164,7 +164,7 @@ export default function StatusView() {
               )}
             </div>
             <button onClick={() => setViewing(null)} className="absolute top-2 right-2 p-2 text-white hover:text-wa-subtext">
-              <i className="fa-solid fa-xmark text-2xl"></i>
+              <i className="bx bx-x text-2xl"></i>
             </button>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStore } from "../lib/store";
 import { supabase } from "../lib/supabase";
 import { formatTime, formatDate, initials, avatarColor, playSound } from "../lib/utils";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker from "./EmojiPicker";
 import MessageMenu from "./MessageMenu";
 import VoiceRecorder from "./VoiceRecorder";
 import MediaUploader from "./MediaUploader";
@@ -32,7 +32,6 @@ export default function ChatWindow() {
   const chat = chats.find((c) => c.id === chatId);
   const msgList = messages.get(chatId) || [];
 
-  // Load messages on mount
   useEffect(() => {
     if (chatId) {
       loadMessages(chatId);
@@ -42,12 +41,10 @@ export default function ChatWindow() {
     }
   }, [chatId]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgList.length]);
 
-  // Typing indicator broadcast
   useEffect(() => {
     if (!chatId) return;
     const ch = supabase.channel(`typing-${chatId}`);
@@ -107,7 +104,6 @@ export default function ChatWindow() {
   const chatAvatar = chat?.type === "group" ? chat?.avatar_url : otherUser?.avatar_url;
   const isOnline = otherUser?.is_online;
 
-  // Filter messages by search
   const displayMessages = searchMode && searchQuery
     ? msgList.filter((m) => (m.decrypted || "").toLowerCase().includes(searchQuery.toLowerCase()))
     : msgList;
@@ -119,14 +115,14 @@ export default function ChatWindow() {
       {/* Header */}
       <div className="flex items-center gap-3 bg-wa-darkpanel px-4 py-2 border-b border-wa-darkborder">
         <button onClick={() => navigate("/")} className="md:hidden p-2 text-wa-subtext hover:text-white">
-          <i className="fa-solid fa-arrow-left"></i>
+          <i className="bx bx-arrow-back text-xl"></i>
         </button>
         <div className="relative shrink-0">
           {chatAvatar ? (
             <img src={chatAvatar} alt="" className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full text-white font-semibold" style={{ background: chat?.type === "group" ? "#25D366" : avatarColor(otherUser?.id || chatId) }}>
-              {chat?.type === "group" ? <i className="fa-solid fa-users"></i> : initials(chatName)}
+              {chat?.type === "group" ? <i className="bx bx-group text-xl"></i> : initials(chatName)}
             </div>
           )}
         </div>
@@ -138,13 +134,13 @@ export default function ChatWindow() {
         </div>
         <div className="flex items-center gap-1">
           <button onClick={() => useStore.getState().setCallState({ receiverId: otherUser?.id, type: "voice", chatId })} className="p-2 text-wa-subtext hover:text-white" title="Voice call">
-            <i className="fa-solid fa-phone"></i>
+            <i className="bx bx-phone text-xl"></i>
           </button>
           <button onClick={() => useStore.getState().setCallState({ receiverId: otherUser?.id, type: "video", chatId })} className="p-2 text-wa-subtext hover:text-white" title="Video call">
-            <i className="fa-solid fa-video"></i>
+            <i className="bx bx-video text-xl"></i>
           </button>
           <button onClick={() => setSearchMode(!searchMode)} className="p-2 text-wa-subtext hover:text-white" title="Search">
-            <i className="fa-solid fa-magnifying-glass"></i>
+            <i className="bx bx-search text-xl"></i>
           </button>
         </div>
       </div>
@@ -152,7 +148,7 @@ export default function ChatWindow() {
       {/* Search bar */}
       {searchMode && (
         <div className="flex items-center gap-2 bg-wa-darkinput px-4 py-2 border-b border-wa-darkborder">
-          <i className="fa-solid fa-magnifying-glass text-wa-subtext text-sm"></i>
+          <i className="bx bx-search text-wa-subtext text-sm"></i>
           <input
             type="text"
             placeholder="Search messages..."
@@ -162,7 +158,7 @@ export default function ChatWindow() {
             autoFocus
           />
           <button onClick={() => { setSearchMode(false); setSearchQuery(""); }} className="p-1 text-wa-subtext hover:text-white">
-            <i className="fa-solid fa-xmark"></i>
+            <i className="bx bx-x text-lg"></i>
           </button>
         </div>
       )}
@@ -173,7 +169,7 @@ export default function ChatWindow() {
           {/* Encryption notice */}
           <div className="mb-4 flex justify-center">
             <div className="rounded-lg bg-yellow-500/10 px-4 py-2 text-center text-xs text-yellow-600 dark:text-yellow-500">
-              <i className="fa-solid fa-lock mr-1"></i>
+              <i className="bx bx-lock-alt mr-1"></i>
               Messages are end-to-end encrypted. No one outside this chat can read them.
             </div>
           </div>
@@ -226,7 +222,7 @@ export default function ChatWindow() {
       {/* Reply preview */}
       {replyTo && (
         <div className="flex items-center gap-3 bg-wa-darkinput px-4 py-2 border-t border-wa-darkborder">
-          <i className="fa-solid fa-reply text-wa-green"></i>
+          <i className="bx bx-reply text-wa-green text-lg"></i>
           <div className="flex-1 border-l-2 border-wa-green pl-2">
             <div className="text-xs font-medium text-wa-green">
               {replyTo.sender_id === user?.id ? "You" : profiles.get(replyTo.sender_id)?.full_name || "Unknown"}
@@ -234,7 +230,7 @@ export default function ChatWindow() {
             <div className="text-xs text-wa-subtext truncate">{replyTo.decrypted || "[Media]"}</div>
           </div>
           <button onClick={() => setReplyTo(null)} className="p-1 text-wa-subtext hover:text-white">
-            <i className="fa-solid fa-xmark"></i>
+            <i className="bx bx-x text-lg"></i>
           </button>
         </div>
       )}
@@ -242,13 +238,13 @@ export default function ChatWindow() {
       {/* Edit indicator */}
       {editTarget && (
         <div className="flex items-center gap-3 bg-wa-darkinput px-4 py-2 border-t border-wa-darkborder">
-          <i className="fa-solid fa-pen text-wa-green"></i>
+          <i className="bx bx-edit text-wa-green text-lg"></i>
           <div className="flex-1">
             <div className="text-xs font-medium text-wa-green">Editing message</div>
             <div className="text-xs text-wa-subtext truncate">{editTarget.decrypted}</div>
           </div>
           <button onClick={() => { setEditTarget(null); setInput(""); }} className="p-1 text-wa-subtext hover:text-white">
-            <i className="fa-solid fa-xmark"></i>
+            <i className="bx bx-x text-lg"></i>
           </button>
         </div>
       )}
@@ -257,10 +253,8 @@ export default function ChatWindow() {
       {showEmoji && (
         <div className="absolute bottom-16 left-4 z-50 scale-in">
           <EmojiPicker
-            onEmojiClick={(emoji) => setInput(input + emoji.emoji)}
+            onEmojiClick={(emoji) => setInput(input + emoji)}
             theme={settings.theme === "dark" ? "dark" : "light"}
-            width={320}
-            height={350}
           />
         </div>
       )}
@@ -268,7 +262,7 @@ export default function ChatWindow() {
       {/* Input bar */}
       <div className="flex items-end gap-2 bg-wa-darkinput px-3 py-2">
         <button onClick={() => setShowEmoji(!showEmoji)} className="p-2 text-wa-subtext hover:text-white transition">
-          <i className="fa-regular fa-face-smile text-xl"></i>
+          <i className="bx bx-smile text-xl"></i>
         </button>
         <MediaUploader chatId={chatId} />
         <textarea
@@ -287,7 +281,7 @@ export default function ChatWindow() {
           disabled={!input.trim()}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-wa-green text-white transition hover:bg-wa-teal disabled:opacity-50"
         >
-          <i className={`fa-solid ${input.trim() ? "fa-paper-plane" : "fa-microphone"}`}></i>
+          <i className={`bx ${input.trim() ? "bxs-send" : "bx-microphone"} text-xl`}></i>
         </button>
       </div>
 
@@ -318,8 +312,9 @@ function MessageBubble({ msg, mine, sender, user, starredIds, onContext, onReply
   if (msg.is_deleted) {
     return (
       <div className={`flex ${mine ? "justify-end" : "justify-start"} mb-1`}>
-        <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm italic text-wa-subtext ${mine ? "bg-wa-darkbubbleout" : "bg-wa-darkbubblein"}`}>
-          🚫 This message was deleted
+        <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm italic text-wa-subtext ${mine ? "bg-wa-darkbubbleout" : "bg-wa-darkbubblein"} flex items-center gap-1.5`}>
+          <i className="bx bx-block text-sm"></i>
+          This message was deleted
         </div>
       </div>
     );
@@ -341,7 +336,7 @@ function MessageBubble({ msg, mine, sender, user, starredIds, onContext, onReply
     if (msg.message_type === "document" && msg.media_url) {
       return (
         <a href={msg.media_url} download className="flex items-center gap-2 text-wa-green hover:underline">
-          <i className="fa-solid fa-file"></i> Download document
+          <i className="bx bx-file text-lg"></i> Download document
         </a>
       );
     }
@@ -379,7 +374,7 @@ function MessageBubble({ msg, mine, sender, user, starredIds, onContext, onReply
           {/* Forwarded indicator */}
           {msg.forwarded_from && (
             <div className="text-xs text-wa-subtext italic mb-1">
-              <i className="fa-solid fa-share mr-1"></i>Forwarded
+              <i className="bx bx-share-alt mr-1"></i>Forwarded
             </div>
           )}
 
@@ -412,7 +407,7 @@ function MessageBubble({ msg, mine, sender, user, starredIds, onContext, onReply
         {/* Star indicator */}
         {starredIds.has(msg.id) && (
           <div className={`absolute -top-2 ${mine ? "-left-2" : "-right-2"} text-yellow-500 text-xs`}>
-            <i className="fa-solid fa-star"></i>
+            <i className="bx bxs-star"></i>
           </div>
         )}
       </div>
@@ -421,8 +416,8 @@ function MessageBubble({ msg, mine, sender, user, starredIds, onContext, onReply
 }
 
 function TickIcon({ status }) {
-  if (status === "sent") return <i className="fa-solid fa-check text-[10px] text-wa-subtext"></i>;
-  if (status === "delivered") return <i className="fa-solid fa-check-double text-[10px] text-wa-subtext"></i>;
-  if (status === "read") return <i className="fa-solid fa-check-double text-[10px] text-sky-400"></i>;
+  if (status === "sent") return <i className="bx bx-check text-[10px] text-wa-subtext"></i>;
+  if (status === "delivered") return <i className="bx bx-check-double text-[10px] text-wa-subtext"></i>;
+  if (status === "read") return <i className="bx bx-check-double text-[10px] text-sky-400"></i>;
   return null;
 }

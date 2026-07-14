@@ -26,14 +26,14 @@ export default function People() {
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-wa-darkborder">
         <button onClick={() => navigate("/")} className="md:hidden p-2 text-wa-subtext hover:text-white">
-          <i className="fa-solid fa-arrow-left"></i>
+          <i className="bx bx-arrow-back text-xl"></i>
         </button>
         <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-          <i className="fa-solid fa-globe text-wa-green"></i>
+          <i className="bx bx-globe text-wa-green"></i>
           People
         </h2>
         <div className="relative ml-auto">
-          <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
+          <i className="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-wa-subtext text-sm"></i>
           <input
             type="text"
             placeholder="Search..."

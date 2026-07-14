@@ -111,3 +111,12 @@ body {
 .scale-in {
   animation: scaleIn 0.2s ease-out;
 }
+
+/* Hide scrollbar for category tabs */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

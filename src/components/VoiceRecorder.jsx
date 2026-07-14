@@ -59,20 +59,16 @@ export default function VoiceRecorder({ chatId }) {
     return (
       <div className="flex items-center gap-2">
         <button onClick={cancel} className="p-2 text-red-400 hover:text-red-500 transition">
-          <i className="fa-solid fa-xmark text-xl"></i>
+          <i className="bx bx-x text-xl"></i>
         </button>
         <span className="text-sm text-wa-subtext">{formatDuration(seconds)}</span>
         <span className="record-pulse h-3 w-3 rounded-full bg-red-500"></span>
         <button onClick={stop} className="p-2 text-wa-green hover:text-wa-teal transition">
-          <i className="fa-solid fa-paper-plane text-xl"></i>
+          <i className="bx bxs-send text-xl"></i>
         </button>
       </div>
     );
   }
 
-  return (
-    <button onClick={start} className="p-2 text-wa-subtext hover:text-white transition">
-      <i className="fa-solid fa-microphone text-xl"></i>
-    </button>
-  );
+  return null;
 }

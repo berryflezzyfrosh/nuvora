@@ -1,154 +1,219 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="theme-color" content="#0B141A" />
-<title>NUVORA</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css" />
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-<div id="app">
-
-<!-- Splash -->
-<div id="splash" class="screen">
-  <div class="splash-content">
-    <svg viewBox="0 0 48 48" width="72" height="72" class="splash-spinner">
-      <circle cx="24" cy="24" r="22" fill="none" stroke="#25D366" stroke-width="3" stroke-dasharray="40 100" stroke-linecap="round" />
-      <circle cx="24" cy="24" r="10" fill="#25D366" opacity="0.8" />
-    </svg>
-    <h1 class="splash-title">NUVORA</h1>
-  </div>
-</div>
-
-<!-- Auth -->
-<div id="auth" class="screen hidden">
-  <div class="auth-container">
-    <div class="auth-logo">
-      <svg viewBox="0 0 48 48" width="64" height="64">
-        <circle cx="24" cy="24" r="22" fill="#25D366" />
-        <path d="M24 12c-6.6 0-12 5.4-12 12 0 2.1.5 4 1.5 5.7L12 36l6.5-1.5c1.7.9 3.6 1.5 5.5 1.5 6.6 0 12-5.4 12-12s-5.4-12-12-12zm0 22c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.8.9.9-3.7-.2-.4c-1-1.5-1.5-3.3-1.5-5.2 0-5.5 4.5-10 10-10s10 4.5 10 10-4.5 10-10 10z" fill="white" />
-      </svg>
-      <h1>NUVORA</h1>
-      <p class="auth-subtitle">Secure, encrypted messaging</p>
-    </div>
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button id="tab-login" class="auth-tab active" onclick="App.switchAuthTab('login')">Log In</button>
-        <button id="tab-signup" class="auth-tab" onclick="App.switchAuthTab('signup')">Sign Up</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#075E54" />
+    <title>NUVORA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Boxicons CSS -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- SPLASH SCREEN -->
+    <div id="splash" class="splash">
+      <div class="splash-inner">
+        <div class="splash-logo">
+          <svg viewBox="0 0 64 64" width="80" height="80">
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs>
+            <circle cx="32" cy="32" r="30" fill="url(#sg)"/>
+            <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="splash-title">NUVORA</h1>
+        <p class="splash-tagline">Connect. Chat. Discover.</p>
+        <div class="splash-loader"><span></span></div>
       </div>
-      <form id="auth-form" onsubmit="App.handleAuth(event)">
-        <div id="signup-fields" class="hidden">
-          <div class="input-group">
-            <i class="bx bx-user"></i>
-            <input type="text" id="auth-fullname" placeholder="Full Name" maxlength="100" />
+    </div>
+
+    <!-- AUTH SCREEN -->
+    <div id="authScreen" class="auth-screen hidden">
+      <div class="auth-card glass">
+        <div class="auth-brand">
+          <svg viewBox="0 0 64 64" width="48" height="48">
+            <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs>
+            <circle cx="32" cy="32" r="30" fill="url(#ag)"/>
+            <path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h1>NUVORA</h1>
+        </div>
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active">Log In</button>
+          <button id="tabSignup" class="auth-tab">Sign Up</button>
+        </div>
+        <!-- Login -->
+        <form id="loginForm" class="auth-form">
+          <div class="field"><i class='bx bx-envelope'></i><input id="loginEmail" type="email" placeholder="Email" required /></div>
+          <div class="field"><i class='bx bx-lock-alt'></i><input id="loginPassword" type="password" placeholder="Password" required /><button type="button" class="toggle-pw" data-target="loginPassword"><i class='bx bx-show'></i></button></div>
+          <p id="loginError" class="auth-error hidden"></p>
+          <button type="submit" class="btn-primary">Log In</button>
+        </form>
+        <!-- Signup -->
+        <form id="signupForm" class="auth-form hidden">
+          <div class="field"><i class='bx bx-user'></i><input id="signupName" type="text" placeholder="Full Name" required /></div>
+          <div class="field"><i class='bx bx-at'></i><input id="signupUsername" type="text" placeholder="Username" required /></div>
+          <div class="field"><i class='bx bx-envelope'></i><input id="signupEmail" type="email" placeholder="Email" required /></div>
+          <div class="field"><i class='bx bx-lock-alt'></i><input id="signupPassword" type="password" placeholder="Password" required /><button type="button" class="toggle-pw" data-target="signupPassword"><i class='bx bx-show'></i></button></div>
+          <div id="pwStrength" class="pw-strength hidden"><div class="pw-bar"><span id="pwBarFill"></span></div><span id="pwLabel">Weak</span></div>
+          <div class="avatar-field">
+            <label class="avatar-pick"><input id="signupAvatarFile" type="file" accept="image/*" hidden /><div class="avatar-preview" id="avatarPreview"><i class='bx bx-camera'></i></div><span>Profile photo</span></label>
+            <div class="avatar-presets" id="avatarPresets"></div>
           </div>
-          <div class="input-group">
-            <i class="bx bx-at"></i>
-            <input type="text" id="auth-username" placeholder="Username" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')" />
+          <p id="signupError" class="auth-error hidden"></p>
+          <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="app hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="brand"><svg viewBox="0 0 64 64" width="32" height="32"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#25D366"/><stop offset="100%" stop-color="#128C7E"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(#bg)"/><path d="M20 44 V20 L44 44 V20" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>NUVORA</span></div>
+          <div class="sidebar-actions">
+            <button id="newChatBtn" class="icon-btn" title="New chat"><i class='bx bx-edit-alt'></i></button>
+            <button id="menuBtn" class="icon-btn" title="Menu"><i class='bx bx-dots-vertical-rounded'></i></button>
           </div>
         </div>
-        <div class="input-group">
-          <i class="bx bx-envelope"></i>
-          <input type="email" id="auth-email" placeholder="Email" required />
+        <div class="sidebar-search"><i class='bx bx-search'></i><input id="sidebarSearch" type="text" placeholder="Search chats" /></div>
+        <div class="chat-list" id="chatList"></div>
+        <nav class="bottom-nav">
+          <button class="nav-item active" data-view="chats"><i class='bx bx-conversation'></i><span>Chats</span></button>
+          <button class="nav-item" data-view="people"><i class='bx bx-group'></i><span>People</span></button>
+          <button class="nav-item" data-view="nuvo"><i class='bx bx-bot'></i><span>NUVO</span></button>
+          <button class="nav-item" data-view="status"><i class='bx bx-circle-half'></i><span>Status</span></button>
+          <button class="nav-item" data-view="profile"><i class='bx bx-user-circle'></i><span>Profile</span></button>
+        </nav>
+      </aside>
+
+      <!-- MAIN PANEL -->
+      <main class="main" id="mainPanel">
+        <!-- Empty state -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon"><i class='bx bx-message-rounded-dots'></i></div>
+          <h2>Welcome to NUVORA</h2>
+          <p>Select a chat or start a new conversation.</p>
         </div>
-        <div class="input-group">
-          <i class="bx bx-lock-alt"></i>
-          <input type="password" id="auth-password" placeholder="Password" required />
+
+        <!-- PEOPLE VIEW -->
+        <section id="peopleView" class="people-view hidden">
+          <header class="people-header glass">
+            <button class="back-btn" id="peopleBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-globe'></i> People</h2>
+            <div class="people-search"><i class='bx bx-search'></i><input id="peopleSearch" type="text" placeholder="Search by name or username" /></div>
+          </header>
+          <div class="people-grid" id="peopleGrid"></div>
+        </section>
+
+        <!-- PROFILE VIEW -->
+        <section id="profileView" class="profile-view hidden">
+          <div class="profile-card glass">
+            <div class="profile-avatar-wrap">
+              <div class="profile-avatar" id="profileAvatar"></div>
+              <button class="profile-edit-avatar" id="editAvatarBtn"><i class='bx bx-camera'></i></button>
+              <input id="profileAvatarFile" type="file" accept="image/*" hidden />
+            </div>
+            <h2 id="profileName"></h2>
+            <p id="profileUsername"></p>
+            <div class="profile-bio-field"><i class='bx bx-quote-alt-left'></i><input id="profileBio" type="text" placeholder="Set a status / bio" maxlength="120" /><button id="saveBioBtn" class="btn-small">Save</button></div>
+            <div class="profile-stats" id="profileStats"></div>
+            <div class="profile-actions">
+              <button id="themeToggle" class="btn-ghost"><i class='bx bx-moon'></i> <span>Dark mode</span></button>
+              <button id="settingsBtn" class="btn-ghost"><i class='bx bx-cog'></i> Settings</button>
+              <button id="logoutBtn" class="btn-danger"><i class='bx bx-log-out'></i> Log out</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="settingsView" class="settings-view hidden">
+          <div class="settings-card glass">
+            <button class="back-btn" id="settingsBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-cog'></i> Settings</h2>
+            <div class="setting-row"><label>Theme</label><div class="seg"><button class="seg-btn active" data-theme="dark"><i class='bx bx-moon'></i> Dark</button><button class="seg-btn" data-theme="light"><i class='bx bx-sun'></i> Light</button></div></div>
+            <div class="setting-row"><label>Notification sounds</label><label class="switch"><input type="checkbox" id="notifToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Typing indicators</label><label class="switch"><input type="checkbox" id="typingToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Read receipts</label><label class="switch"><input type="checkbox" id="receiptsToggle" checked /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Disappearing messages</label><label class="switch"><input type="checkbox" id="disappearToggle" /><span class="slider"></span></label></div>
+            <div class="setting-row"><label>Block list</label><button id="blockListBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Starred messages</label><button id="starredBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Call history</label><button id="callHistoryBtn" class="btn-ghost">View</button></div>
+            <div class="setting-row"><label>Archive</label><button id="archiveBtn" class="btn-ghost">View</button></div>
+          </div>
+        </section>
+
+        <!-- STATUS VIEW -->
+        <section id="statusView" class="status-view hidden">
+          <header class="people-header glass">
+            <button class="back-btn" id="statusBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <h2><i class='bx bx-circle-half'></i> Status</h2>
+          </header>
+          <div class="status-content" id="statusContent"></div>
+        </section>
+
+        <!-- CHAT VIEW -->
+        <section id="chatView" class="chat-view hidden">
+          <header class="chat-header glass">
+            <button class="back-btn" id="chatBackBtn"><i class='bx bx-arrow-back'></i></button>
+            <div class="chat-header-avatar" id="chatHeaderAvatar"></div>
+            <div class="chat-header-info">
+              <h3 id="chatHeaderName"></h3>
+              <span id="chatHeaderStatus" class="chat-header-status"></span>
+            </div>
+            <div class="chat-header-actions">
+              <button class="icon-btn" id="callVoiceBtn" title="Voice call"><i class='bx bx-phone'></i></button>
+              <button class="icon-btn" id="callVideoBtn" title="Video call"><i class='bx bx-video'></i></button>
+              <button class="icon-btn" id="chatSearchBtn" title="Search"><i class='bx bx-search'></i></button>
+              <button class="icon-btn" id="chatMenuBtn" title="More"><i class='bx bx-dots-vertical-rounded'></i></button>
+            </div>
+            <div class="chat-search-bar hidden" id="chatSearchBar">
+              <input id="chatSearchInput" type="text" placeholder="Search messages..." />
+              <button id="chatSearchClose" class="icon-btn"><i class='bx bx-x'></i></button>
+            </div>
+          </header>
+          <div class="messages" id="messages"></div>
+          <div class="reply-preview hidden" id="replyPreview"><div class="reply-preview-content"></div><button id="replyPreviewClose" class="icon-btn"><i class='bx bx-x'></i></button></div>
+          <div class="emoji-panel hidden" id="emojiPanel"></div>
+          <footer class="chat-input-bar glass">
+            <button class="icon-btn" id="emojiBtn" title="Emoji"><i class='bx bx-smile'></i></button>
+            <button class="icon-btn" id="attachBtn" title="Attach"><i class='bx bx-paperclip'></i></button>
+            <input type="file" id="fileInput" hidden />
+            <textarea id="messageInput" placeholder="Type a message..." rows="1"></textarea>
+            <button class="icon-btn" id="voiceBtn" title="Voice"><i class='bx bx-microphone'></i></button>
+            <button class="send-btn" id="sendBtn" title="Send"><i class='bx bxs-send'></i></button>
+          </footer>
+        </section>
+
+        <!-- CALL MODAL -->
+        <div id="callModal" class="call-modal hidden">
+          <div class="call-content">
+            <div class="call-avatar" id="callAvatar"></div>
+            <h2 id="callName"></h2>
+            <p id="callStatus">Calling...</p>
+            <div class="call-controls">
+              <button class="call-btn" id="callMuteBtn"><i class='bx bx-microphone'></i></button>
+              <button class="call-btn hangup" id="callEndBtn"><i class='bx bx-phone-off'></i></button>
+              <button class="call-btn" id="callVideoToggleBtn"><i class='bx bx-video'></i></button>
+              <button class="call-btn" id="callSpeakerBtn"><i class='bx bx-volume-full'></i></button>
+            </div>
+          </div>
         </div>
-        <div id="pw-strength" class="hidden">
-          <div class="strength-bar"><div id="strength-fill"></div></div>
-          <span id="strength-label">Weak</span>
-        </div>
-        <div id="signup-pin" class="input-group hidden">
-          <i class="bx bx-key"></i>
-          <input type="password" id="auth-pin" placeholder="PIN (optional, for E2EE key lock)" />
-        </div>
-        <div id="auth-error" class="error-msg hidden"></div>
-        <button type="submit" id="auth-submit" class="btn-primary">Log In</button>
-      </form>
+      </main>
     </div>
-    <p class="auth-footer"><i class="bx bx-lock-alt"></i> Messages are end-to-end encrypted. Only you and your recipients can read them.</p>
-  </div>
-</div>
 
-<!-- Main Layout -->
-<div id="main" class="screen hidden">
-  <div class="main-layout">
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <h1 class="sidebar-title"><i class="bx bxl-whatsapp"></i> NUVORA</h1>
-        <div class="sidebar-actions">
-          <button onclick="App.openNewChat()" title="New chat"><i class="bx bx-edit-alt"></i></button>
-          <button onclick="App.navigate('settings')" title="Settings"><i class="bx bx-dots-vertical-rounded"></i></button>
-        </div>
-      </div>
-      <div class="search-bar">
-        <i class="bx bx-search"></i>
-        <input type="text" id="chat-search" placeholder="Search chats" oninput="App.filterChats(this.value)" />
-      </div>
-      <div id="chat-list" class="chat-list"></div>
-      <div id="sidebar-footer" class="sidebar-footer" onclick="App.navigate('profile')"></div>
-    </div>
+    <!-- CONTEXT MENU -->
+    <div id="ctxMenu" class="ctx-menu hidden"></div>
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden"><div class="modal-card glass" id="modalCard"></div></div>
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
 
-    <!-- Chat Window -->
-    <div id="chat-window" class="chat-window">
-      <div id="chat-header" class="chat-header"></div>
-      <div id="search-bar-inline" class="search-inline hidden">
-        <i class="bx bx-search"></i>
-        <input type="text" id="msg-search" placeholder="Search messages..." oninput="App.searchMessages(this.value)" />
-        <button onclick="App.closeSearch()"><i class="bx bx-x"></i></button>
-      </div>
-      <div id="messages-container" class="messages-container"></div>
-      <div id="reply-bar" class="reply-bar hidden"></div>
-      <div id="edit-bar" class="edit-bar hidden"></div>
-      <div id="emoji-picker" class="emoji-picker hidden"></div>
-      <div class="input-bar">
-        <button onclick="App.toggleEmoji()" title="Emoji"><i class="bx bx-smile"></i></button>
-        <button onclick="App.triggerUpload()" title="Attach"><i class="bx bx-paperclip"></i></button>
-        <input type="file" id="file-input" hidden onchange="App.handleUpload(event)" />
-        <textarea id="message-input" placeholder="Type a message" rows="1" oninput="App.onInputChange(this)" onkeydown="App.onInputKey(event)"></textarea>
-        <button id="send-btn" onclick="App.handleSend()" disabled><i class="bx bx-microphone"></i></button>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div id="empty-state" class="empty-state">
-      <i class="bx bxs-conversation"></i>
-      <p>Select a chat to start messaging</p>
-    </div>
-
-    <!-- Profile Screen -->
-    <div id="profile-screen" class="panel-screen hidden"></div>
-
-    <!-- Settings Screen -->
-    <div id="settings-screen" class="panel-screen hidden"></div>
-
-    <!-- People Screen -->
-    <div id="people-screen" class="panel-screen hidden"></div>
-  </div>
-</div>
-
-<!-- New Chat Modal -->
-<div id="new-chat-modal" class="modal-overlay hidden" onclick="App.closeNewChat(event)">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <div id="new-chat-body"></div>
-  </div>
-</div>
-
-<!-- Message Context Menu -->
-<div id="msg-menu" class="msg-menu hidden"></div>
-
-<!-- Call Modal -->
-<div id="call-modal" class="call-modal hidden"></div>
-
-</div>
-<script src="app.js"></script>
-</body>
+    <!-- Supabase JS v2 (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
 </html>

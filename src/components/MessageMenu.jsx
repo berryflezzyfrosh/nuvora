@@ -13,7 +13,6 @@ export default function MessageMenu({ msg, x, y, isMine, starred, onClose, onRep
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Adjust position to stay on screen
   const left = Math.min(x, window.innerWidth - 220);
   const top = Math.min(y, window.innerHeight - 300);
 
@@ -38,16 +37,16 @@ export default function MessageMenu({ msg, x, y, isMine, starred, onClose, onRep
 
       {/* Menu items */}
       <div className="rounded-xl bg-wa-darkpanel border border-wa-darkborder py-1 shadow-xl overflow-hidden">
-        <MenuItem icon="reply" label="Reply" onClick={onReply} />
+        <MenuItem icon="bx-reply" label="Reply" onClick={onReply} />
         {msg.message_type === "text" && isMine && !msg.is_deleted && (
-          <MenuItem icon="pen" label="Edit" onClick={onEdit} />
+          <MenuItem icon="bx-edit" label="Edit" onClick={onEdit} />
         )}
-        <MenuItem icon="copy" label="Copy" onClick={onCopy} />
-        <MenuItem icon="share" label="Forward" onClick={() => { navigator.clipboard.writeText(msg.decrypted || ""); onClose(); }} />
-        <MenuItem icon="star" label={starred ? "Unstar" : "Star"} onClick={onStar} />
-        <MenuItem icon="trash" label="Delete for me" onClick={() => onDelete(false)} danger />
+        <MenuItem icon="bx-copy" label="Copy" onClick={onCopy} />
+        <MenuItem icon="bx-share-alt" label="Forward" onClick={() => { navigator.clipboard.writeText(msg.decrypted || ""); onClose(); }} />
+        <MenuItem icon="bx-star" label={starred ? "Unstar" : "Star"} onClick={onStar} />
+        <MenuItem icon="bx-trash" label="Delete for me" onClick={() => onDelete(false)} danger />
         {isMine && !msg.is_deleted && (
-          <MenuItem icon="trash-can" label="Delete for everyone" onClick={() => onDelete(true)} danger />
+          <MenuItem icon="bx-trash" label="Delete for everyone" onClick={() => onDelete(true)} danger />
         )}
       </div>
     </div>
@@ -62,7 +61,7 @@ function MenuItem({ icon, label, onClick, danger }) {
         danger ? "text-red-400" : "text-white"
       }`}
     >
-      <i className={`fa-solid fa-${icon} w-4`}></i>
+      <i className={`bx ${icon} w-4 text-lg`}></i>
       {label}
     </button>
   );

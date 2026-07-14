@@ -37,11 +37,11 @@ export default function Profile() {
     <div className="flex h-full flex-col bg-wa-darkpanel overflow-y-auto">
       <div className="flex items-center gap-3 px-4 py-3 border-b border-wa-darkborder">
         <button onClick={() => navigate("/")} className="md:hidden p-2 text-wa-subtext hover:text-white">
-          <i className="fa-solid fa-arrow-left"></i>
+          <i className="bx bx-arrow-back text-xl"></i>
         </button>
         <h2 className="text-lg font-semibold text-white">Profile</h2>
         <button onClick={() => navigate("/settings")} className="ml-auto p-2 text-wa-subtext hover:text-white">
-          <i className="fa-solid fa-gear"></i>
+          <i className="bx bx-cog text-xl"></i>
         </button>
       </div>
 
@@ -57,7 +57,7 @@ export default function Profile() {
               </div>
             )}
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition">
-              <i className="fa-solid fa-camera text-white text-2xl"></i>
+              <i className="bx bx-camera text-white text-2xl"></i>
             </div>
           </div>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => handleAvatar(e.target.files[0])} />
@@ -110,7 +110,7 @@ export default function Profile() {
             </button>
           )}
           <button onClick={() => signOut()} className="w-full rounded-xl bg-red-500/10 py-3 font-semibold text-red-400 hover:bg-red-500/20 transition">
-            <i className="fa-solid fa-right-from-bracket mr-2"></i>
+            <i className="bx bx-log-out mr-2 text-lg"></i>
             Log Out
           </button>
         </div>

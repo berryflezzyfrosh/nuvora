@@ -21,9 +21,14 @@ export default function AuthScreen() {
       if (mode === "login") {
         await signIn({ email, password, pin });
       } else {
-        if (password.length < 6) throw new Error("Password must be at least 6 characters");
+        if (password.length < 8) throw new Error("Password must be at least 8 characters");
+        if (!/[A-Z]/.test(password)) throw new Error("Password must contain an uppercase letter");
+        if (!/[a-z]/.test(password)) throw new Error("Password must contain a lowercase letter");
+        if (!/\d/.test(password)) throw new Error("Password must contain a number");
+        if (!/[^A-Za-z0-9]/.test(password)) throw new Error("Password must contain a special character");
         if (!fullName.trim()) throw new Error("Full name is required");
         if (!username.trim()) throw new Error("Username is required");
+        if (username.trim().length < 3) throw new Error("Username must be at least 3 characters");
         await signUp({ email, password, fullName, username, pin: pin || null });
       }
     } catch (err) {
@@ -35,10 +40,10 @@ export default function AuthScreen() {
 
   const passwordStrength = () => {
     let s = 0;
-    if (password.length >= 6) s++;
-    if (password.length >= 10) s++;
+    if (password.length >= 8) s++;
+    if (password.length >= 12) s++;
     if (/[A-Z]/.test(password) && /[a-z]/.test(password)) s++;
-    if (/\d/.test(password) || /[^A-Za-z0-9]/.test(password)) s++;
+    if (/\d/.test(password) && /[^A-Za-z0-9]/.test(password)) s++;
     return s;
   };
   const ps = passwordStrength();
@@ -58,7 +63,7 @@ export default function AuthScreen() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">WhatsApp Clone</h1>
+          <h1 className="text-2xl font-bold text-white">NUVORA</h1>
           <p className="mt-1 text-sm text-wa-subtext">Secure, encrypted messaging</p>
         </div>
 
@@ -85,12 +90,12 @@ export default function AuthScreen() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <>
-                <Input icon="user" placeholder="Full Name" value={fullName} onChange={setFullName} />
-                <Input icon="at" placeholder="Username" value={username} onChange={(v) => setUsername(v.toLowerCase().replace(/\s/g, ""))} />
+                <Input icon="bx-user" placeholder="Full Name" value={fullName} onChange={setFullName} />
+                <Input icon="bx-at" placeholder="Username" value={username} onChange={(v) => setUsername(v.toLowerCase().replace(/\s/g, ""))} />
               </>
             )}
-            <Input icon="envelope" type="email" placeholder="Email" value={email} onChange={setEmail} />
-            <Input icon="lock" type="password" placeholder="Password" value={password} onChange={setPassword} />
+            <Input icon="bx-envelope" type="email" placeholder="Email" value={email} onChange={setEmail} />
+            <Input icon="bx-lock-alt" type="password" placeholder="Password" value={password} onChange={setPassword} />
 
             {mode === "signup" && password && (
               <div className="flex items-center gap-2">
@@ -102,7 +107,7 @@ export default function AuthScreen() {
             )}
 
             {mode === "signup" && (
-              <Input icon="key" type="password" placeholder="PIN (optional, for E2EE key lock)" value={pin} onChange={setPin} />
+              <Input icon="bx-key" type="password" placeholder="PIN (optional, for E2EE key lock)" value={pin} onChange={setPin} />
             )}
 
             {error && (
@@ -120,6 +125,7 @@ export default function AuthScreen() {
         </div>
 
         <p className="mt-4 text-center text-xs text-wa-subtext">
+          <i className="bx bx-lock-alt mr-1"></i>
           Messages are end-to-end encrypted. Only you and your recipients can read them.
         </p>
       </div>
@@ -130,13 +136,14 @@ export default function AuthScreen() {
 function Input({ icon, type = "text", placeholder, value, onChange }) {
   return (
     <div className="relative">
-      <i className={`fa-solid fa-${icon} absolute left-4 top-1/2 -translate-y-1/2 text-wa-subtext text-sm`}></i>
+      <i className={`bx ${icon} absolute left-4 top-1/2 -translate-y-1/2 text-wa-subtext text-sm`}></i>
       <input
         type={type}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required
+        maxLength={type === "text" ? 100 : undefined}
         className="w-full rounded-xl bg-wa-darkinput border border-wa-darkborder py-3 pl-11 pr-4 text-white placeholder:text-wa-subtext focus:outline-none focus:border-wa-green transition"
       />
     </div>
